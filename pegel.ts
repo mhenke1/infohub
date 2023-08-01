@@ -1,6 +1,6 @@
 // @filename: pegel.ts
 
-const fiveMinutesinMilliSec = 5*60*1000;
+const fiveMinutesinMilliSec = 5 * 60 * 1000;
 let pegelStand = "0 cm";
 
 function inrange(value: number, min: number, max: number): boolean {
@@ -11,7 +11,6 @@ function inrange(value: number, min: number, max: number): boolean {
 }
 
 function selectIcon(pegelStand: string): string {
-
   const pegelStandElements = pegelStand.split(" ");
   const depth = parseInt(pegelStandElements[0]);
 
@@ -37,14 +36,24 @@ function selectIcon(pegelStand: string): string {
 }
 
 async function fetchPegelInfo() {
-  const formData = new URLSearchParams();
-  formData.append("pgnr", "BW_92");
+  const myHeaders = new Headers();
+  myHeaders.append("Accept", "application/json, text/javascript, */*; q=0.01");
+  myHeaders.append(
+    "Content-Type",
+    "application/x-www-form-urlencoded; charset=UTF-8",
+  );
+
+  const urlencoded = new URLSearchParams();
+  urlencoded.append("pgnr", "BW_92");
+  urlencoded.append("ki", "698501019791");
 
   const request = new Request(
     "https://www.hochwasserzentralen.de/webservices/get_infospegel.php",
     {
       method: "POST",
-      body: formData,
+      headers: myHeaders,
+      body: urlencoded,
+      redirect: "follow",
     },
   );
 
@@ -57,7 +66,7 @@ async function fetchPegelInfo() {
     console.error(e);
   }
 
-  console.log("pegelStand" + depth);
+  console.log("pegelStand:" + depth);
   pegelStand = depth;
 }
 
@@ -74,5 +83,5 @@ export function getPegelJSON() {
   return lametricJSON;
 }
 
-fetchPegelInfo()
+fetchPegelInfo();
 setInterval(() => fetchPegelInfo(), fiveMinutesinMilliSec);

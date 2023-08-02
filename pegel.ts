@@ -2,6 +2,7 @@
 
 const fiveMinutesinMilliSec = 5 * 60 * 1000;
 let pegelStand = "0 cm";
+let ki = "4711"
 
 function inrange(value: number, min: number, max: number): boolean {
   if (value >= min && value <= max) {
@@ -36,6 +37,24 @@ function selectIcon(pegelStand: string): string {
 }
 
 async function fetchPegelInfo() {
+
+  const regex = new RegExp("addLagePegel\\((.*?)\\)", "m");
+
+  const kiRequest = new Request(
+    "https://www.hochwasserzentralen.de/",
+  );
+
+  try {
+    const response = await fetch(kiRequest);
+    const text = await response.text();
+    const kiMatch = text.match(regex);
+    if (kiMatch && kiMatch.length > 1) {
+      ki = kiMatch[1];
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
   const myHeaders = new Headers();
   myHeaders.append("Accept", "application/json, text/javascript, */*; q=0.01");
   myHeaders.append(
@@ -45,7 +64,7 @@ async function fetchPegelInfo() {
 
   const urlencoded = new URLSearchParams();
   urlencoded.append("pgnr", "BW_92");
-  urlencoded.append("ki", "698501019791");
+  urlencoded.append("ki", ki);
 
   const request = new Request(
     "https://www.hochwasserzentralen.de/webservices/get_infospegel.php",

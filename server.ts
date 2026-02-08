@@ -1,6 +1,5 @@
-import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getPegelJSON } from "./pegel.ts"
-import { getBusJSON } from "./bus.ts"
 
 
 const router = new Router();
@@ -11,9 +10,6 @@ router
   .get("/pegel", (context) => {
     context.response.body = getPegelJSON()
   })
-  .get("/departures", (context) => {
-    context.response.body = getBusJSON()
-  });
 
 const app = new Application();
 app.use(router.routes());

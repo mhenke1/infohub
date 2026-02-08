@@ -38,49 +38,21 @@ function selectIcon(pegelStand: string): string {
 
 async function fetchPegelInfo() {
 
-  const regex = new RegExp("addLagePegel\\((.*?)\\)", "m");
-
-  const kiRequest = new Request(
-    "https://www.hochwasserzentralen.de/",
-  );
-
-  try {
-    const response = await fetch(kiRequest);
-    const text = await response.text();
-    const kiMatch = text.match(regex);
-    if (kiMatch && kiMatch.length > 1) {
-      ki = kiMatch[1];
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
-  const myHeaders = new Headers();
-  myHeaders.append("Accept", "application/json, text/javascript, */*; q=0.01");
-  myHeaders.append(
-    "Content-Type",
-    "application/x-www-form-urlencoded; charset=UTF-8",
-  );
-
-  const urlencoded = new URLSearchParams();
-  urlencoded.append("pgnr", "BW_92");
-  urlencoded.append("ki", ki);
-
-  const request = new Request(
-    "https://www.hochwasserzentralen.de/webservices/get_infospegel.php",
-    {
-      method: "POST",
-      headers: myHeaders,
-      body: urlencoded,
-      redirect: "follow",
-    },
-  );
-
   let depth = "";
   try {
-    const response = await fetch(request);
-    const pegelData = await response.json();
-    depth = pegelData.W;
+    const response = await fetch("https://www.hvz.baden-wuerttemberg.de/js/hvz_peg_stmn.js");
+    // Get the data using this regex "\.*Wannweil.*,'(.*)','cm'" and extract the first group
+    // constrauct the regex
+    const regex = new RegExp(".*Wannweil.*,'(.*)','cm'");
+    // get the contenct of the response as text and apply the regex to it
+    const text = await response.text();
+    // print the text to the console
+    const match = regex.exec(text);
+    if (match) {
+      depth = match[1] + " cm";
+    } else {
+      console.error("Could not find pegelStand in response");
+    }
   } catch (e) {
     console.error(e);
   }
